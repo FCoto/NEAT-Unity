@@ -9,9 +9,13 @@ public class Connection
     public double w;
     public int innovationNumber;
 
-    public Connection()
+    public Connection(Node inputNode, Node outputNode, double w, int innovationNumber, bool expressed)
     {
-        expressed = true;
+        this.inputNode = inputNode;
+        this.outputNode = outputNode;
+        this.w = w;
+        this.expressed = expressed;
+        this.innovationNumber = innovationNumber;
     }
     public void MutateW()
     {
@@ -35,6 +39,10 @@ public class Connection
         else if (w < -1)
             w = -1;
 
+    }
+    public Connection Copy()
+    {
+        return new Connection(inputNode, outputNode, w, innovationNumber, expressed);
     }
 
 }

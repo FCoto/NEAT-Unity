@@ -37,4 +37,10 @@ public class Node
     {
         return 1 / (1 + Math.Pow(Math.E, -4.9 * x));
     }
+
+
+    public Node Copy()
+    {
+        return new Node(layer, id);
+    }
 }
