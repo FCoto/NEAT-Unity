@@ -7,15 +7,15 @@ public class Connection
     public Node inputNode;
     public Node outputNode;
     public double w;
-    public int innovationNumber;
+    public int innovationNumber = -1;
 
-    public Connection(Node inputNode, Node outputNode, double w, int innovationNumber, bool expressed)
+    public Connection(Node inputNode, Node outputNode, double w, bool expressed)
     {
         this.inputNode = inputNode;
         this.outputNode = outputNode;
         this.w = w;
         this.expressed = expressed;
-        this.innovationNumber = innovationNumber;
+       
     }
     public void MutateW()
     {
@@ -42,7 +42,9 @@ public class Connection
     }
     public Connection Copy()
     {
-        return new Connection(inputNode, outputNode, w, innovationNumber, expressed);
+        Connection copy = new Connection(inputNode, outputNode, w, expressed);
+        copy.innovationNumber = innovationNumber;
+        return copy;
     }
 
 }

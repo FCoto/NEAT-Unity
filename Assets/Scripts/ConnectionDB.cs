@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-public class ConnectionDB
+public static class ConnectionDB
 {
 
-    List<Connection> connectionList = new List<Connection>();
+    static List<Connection> connectionList = new List<Connection>();
 
-    public bool CheckIfConnectionExists(Connection conn)
+    public static bool CheckIfConnectionExists(Connection conn)
     {
         foreach(Connection c in connectionList)
         {
@@ -17,7 +17,7 @@ public class ConnectionDB
         return false;
     }
 
-    public bool AddConnection(Connection conn)
+    public static bool AddConnection(Connection conn)
     {
         if (!CheckIfConnectionExists(conn))
         {
@@ -27,4 +27,18 @@ public class ConnectionDB
         else return false;
     }
 
+    public static int GetCurrentInnovationNumber(Connection conn)
+    {
+        foreach (Connection c in connectionList)
+        {
+            if (c.inputNode.id == conn.inputNode.id && c.outputNode.id == conn.outputNode.id)
+            {
+                return c.innovationNumber;
+            }
+
+        }
+        conn.innovationNumber = connectionList.Count;
+        connectionList.Add(conn);
+        return conn.innovationNumber;
+    }
 }
