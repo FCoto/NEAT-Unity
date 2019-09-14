@@ -13,6 +13,11 @@ public class Genome
     public List<Connection> connections;
     public List<Node> nodes;
 
+    public List<double> inputValues;
+    public bool isDead;
+    public float fitness;
+
+
     public Genome(int nInputs, int nOutputs)
     {
         this.nInputs  = nInputs;
@@ -20,8 +25,9 @@ public class Genome
         layers        = 2;
         nodes         = new List<Node>();
         connections   = new List<Connection>();
-        network       = new List<Node>(); 
-
+        network       = new List<Node>();
+        isDead        = false;
+        fitness       = 0;
     }
     #region Start Functions
 
@@ -197,14 +203,20 @@ public class Genome
         if (rand < Config.MUTATE_NODE_PROB)
             NodeMutation();
     }
+    
+    public void ReceiveData(List<double> data)
+    {
+        inputValues = data;
+    }
 
-
+    public List<double> ProcessData()
+    {
+        return FeedForward(inputValues);
+    }
 
     #endregion
 
     #region Aux Functions
-    
-
 
     private bool IsFullyConnected()
     {
@@ -307,6 +319,27 @@ public class Genome
 
         return outputValues;
 
+    }
+    public Genome Copy()
+    {
+        Genome copy = new Genome(nInputs, nOutputs);
+
+        foreach (Node n in nodes)
+            copy.nodes.Add(n.Copy());
+
+        foreach (Connection c in connections)
+        {
+            Node NodeIn = copy.nodes.Find(n => n.id == c.inputNode.id);
+            Node NodeOut = copy.nodes.Find(n => n.id == c.outputNode.id);
+            Connection newConnection = new Connection(NodeIn, NodeOut, c.w, c.expressed);
+            newConnection.innovationNumber = c.innovationNumber;
+            copy.connections.Add(newConnection);
+        }
+
+        copy.layers = layers;
+        copy.biasNode = copy.nodes[0];
+
+        return copy;
     }
 
     #endregion
