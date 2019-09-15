@@ -1,13 +1,16 @@
-﻿using System;
+﻿
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class Species
 {
     public List<Genome> organisms;
     public int staleness;
     public Genome mainGenome;
-
+    public float avgFitness;
+    public float bestFitness;
 
     #region Main functions
     public Species(Genome genome)
@@ -16,6 +19,8 @@ public class Species
         organisms = new List<Genome>();
         organisms.Add(genome);
         mainGenome = genome;
+        bestFitness = genome.fitness;
+        avgFitness = 0;
     }
 
 
@@ -41,6 +46,88 @@ public class Species
         return Config.COMPATIBILITY_THRESHOLD > compatibility;
 
 
+    }
+
+    public Genome SpeciesCrossover()
+    {
+        float rand = Random.Range(0, 1);
+
+        Genome child;
+        if (rand < Config.CROSSOVER_PROB)
+            child = SelectOrganism().Copy();
+        else
+        {
+            // Crossover
+
+            Genome genomeA = SelectOrganism();
+            Genome genomeB = SelectOrganism();
+
+            if (genomeA.fitness >= genomeB.fitness)
+                child = genomeA.Crossover(genomeB);
+            else child = genomeB.Crossover(genomeA);
+        }
+
+        child.Mutation();
+
+        return child;
+
+    }
+
+    public Genome SelectOrganism()
+    {
+        if (organisms.Count == 1)
+            return organisms[0];
+
+        float fitnessSum = organisms.Sum(g => g.fitness);
+
+        float rand = Random.Range(0, fitnessSum);
+
+        float intervalSum = 0;
+
+        foreach(Genome g in organisms)
+        {
+            intervalSum += g.fitness;
+
+            if (intervalSum >= rand)
+                return g;
+        }
+        return null;
+    }
+
+    public void SortOrganisms()
+    {
+        //Sort by fitness, descending order
+        organisms.Sort((x, y) => y.fitness.CompareTo(x.fitness));
+
+        if(organisms[0].fitness > bestFitness)
+        {
+            staleness = 0;
+            bestFitness = organisms[0].fitness;
+            mainGenome = organisms[0];
+        }
+        else
+        {
+            staleness++;
+        }
+    }
+
+    public void AverageFitness()
+    {
+        float sum = organisms.Sum(g => g.fitness) / organisms.Count;
+
+    }
+
+    public void KillBottom()
+    {
+ 
+        if (organisms.Count > 1)
+            organisms = organisms.Take((int)Mathf.Round(organisms.Count / 2)).ToList();
+    }
+
+    public void FitnessSharing()
+    {
+        foreach (Genome g in organisms)
+            g.fitness /= organisms.Count;
     }
     #endregion
 
@@ -74,7 +161,7 @@ public class Species
                 if (c1.innovationNumber == c2.innovationNumber)
                 {
                     matching++;
-                    sum += Math.Abs(c1.w - c2.w);
+                    sum += System.Math.Abs(c1.w - c2.w);
                     break;
                 }
 
@@ -84,6 +171,9 @@ public class Species
         return sum / matching;
 
     }
+
+
+
 
     #endregion
 }

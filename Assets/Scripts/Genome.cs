@@ -132,7 +132,7 @@ public class Genome
 
     }
 
-    public void Crossover(Genome parent2)
+    public Genome Crossover(Genome parent2)
     {
         Genome child = new Genome(nInputs, nOutputs);
 
@@ -184,6 +184,7 @@ public class Genome
                 newConnection.innovationNumber = c.innovationNumber;
             }
         }
+        return child;
     }
 
 
